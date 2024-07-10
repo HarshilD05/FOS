@@ -1,0 +1,167 @@
+// Simulating the Bankers Algorithm to Avoid Deadlock
+#include <iostream>
+#include <vector>
+using namespace std;
+
+// Asumming thre Resources of the System : MEMORY, IO, STACK
+// Defining the resources of the system
+const int nResources = 3;
+
+struct Process {
+    int id;
+    int required[nResources];
+    int alloc[nResources];
+    int remaining[nResources];
+    bool complete;
+    
+    Process(int i) : id(i), complete(false) {
+        for (int j = 0;j<nResources;j++) {
+            cout<<"\nEnter amount of resource "<< j <<" required : ";
+            cin>> required[j];
+            
+            cout<<"\n Enter amount of resource "<< j <<" allocated : ";
+            cin>> alloc[j];
+            
+            remaining[j] = required[j] - alloc[j];
+        }
+    }
+};
+
+int main() {
+    int resources[nResources];   // maximum resources
+    int avail[nResources];   // Available resources
+    cout<<"\nDefining Resources of the System....";
+    for (int i = 0;i<nResources;i++) {
+        cout<<"\nENTER maximum number of Resource "<< i <<" in the system : ";
+        cin>> resources[i];
+        
+        avail[i] = resources[i];
+    }
+    
+    // Taking Process data input
+    cout<<"\n\nTaking Process Data Input....";
+    int n;
+    vector<Process> p;
+    cout<<"\nEnter NUmber of Processes : "; 
+    cin>> n;
+    
+    for (int i = 0;i<n;i++) {
+        cout<<"\n\nProcess "<< i ;
+        Process x(i);
+        
+        // removing the resources acuired by the process from available resources
+        for (int j = 0;j<nResources;j++) {
+            avail[j] -= x.alloc[j];
+        }
+        
+        p.push_back(x);
+    }
+    
+    // Executing the Processes
+    int curr_process = 0;
+    vector<int> exec_order; // to store execution order
+    // to store the processes which were skipped 
+    // so that we can terminate the execution
+    vector<int> skipped; 
+    
+    cout<<"\n\nExecuting The Processes....";
+    
+    while (1) {
+        cout<<"\n\n Process "<< p[curr_process].id;
+        cout<<"\nResources needed : ";
+        for (int i = 0;i<nResources;i++) {
+            cout<< p[curr_process].remaining[i] <<" ";
+        }
+        
+        cout<<"\nAvailable Resources : ";
+        for (int i = 0;i<nResources;i++) {
+            cout<< avail[i] <<" ";
+        }
+        
+        // checking if we have a repeated skipped process
+        for (int x : skipped) {
+            if (x == p[curr_process].id) {
+                cout<<"\n\n Execurtiom of the remaining processes ";
+                cout<<"\nis not possible since we have entered";
+                cout<<"\nthe deadlock condition...";
+                
+                goto ending;
+            }
+        }
+        
+        
+        // Checking if we have Avilable resources to allocate to the Process
+        bool executable = true;
+        for (int i = 0;i<nResources;i++) {
+            if (p[curr_process].required[i] > resources[i]) {
+                cout<<"\n\n This Process cannot be Executed...";
+                cout<<"\n Since its demanding more resources than present in the system...";
+                executable = false;
+                
+                // Removing this process from the execution list
+                p.erase(p.begin() + curr_process);
+                goto next;
+            }
+            
+            if (avail[i] < p[curr_process].remaining[i]) {
+                executable = false;
+                break;
+            }        
+        }
+        
+        if (executable) {
+            // Finishing the execution of the Process
+            p[curr_process].complete = true;
+            
+            // Freeing up the resources taken up by the process
+            for (int i = 0;i<nResources;i++) {
+                avail[i] += p[curr_process].alloc[i];
+                p[curr_process].alloc[i] = 0;
+            }
+            cout<<"\n\nProcess "<< p[curr_process].id <<" Completed";
+            
+            // Storing the Execution Order
+            exec_order.push_back(p[curr_process].id);
+            // Clearing away the skipped process stack
+            skipped.clear();
+            
+        }
+        else {
+            cout<<"\n\n Insufficient resources....";
+            cout<<"\nProcess "<< curr_process <<" could Not be executed";
+            
+            // adding the process to skipped processes
+            skipped.push_back(p[curr_process].id);
+        }
+        
+        next : 
+        // Getting the next Process to be exectued
+        for (int i = curr_process;i <p.size();i) {
+            // If reached the end of Process List loop back to start
+            // to check for any remaining processes
+            if (i == p.size()-1) i = -1;
+            
+            i++;    // incrementing the process number
+            
+            // if all process are executed then goto end
+            if (i == curr_process) goto ending;
+            
+            if (!p[i].complete) {
+                curr_process = i;
+                break;
+            }
+            
+        }
+    }
+    
+    ending : 
+    cout<<"\n\n End of Execution...";
+    
+    // printing execution Order
+    cout<<"\n\n Execution Order : \t";
+    for (int x : exec_order) {
+        cout<<"P"<< x <<" ";
+    }
+
+    return 0;
+}

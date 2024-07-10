@@ -1,0 +1,85 @@
+// Implementing LRU Page Replacement Algorithm
+#include <iostream>
+#include<vector>
+using namespace std;
+
+// Function to check if Page exists in frames
+bool added (vector<int> frames, int page) {
+    for (int x : frames) {
+        if (x == page) return true; // if Page exists return true
+    }
+    return false;
+}
+
+// function to replace the page in the frames
+void replacePage(vector<int> &frames, int replace, int x) {
+    for (int i = 0;i<frames.size();i++) {
+        if (frames[i] == replace) {
+            frames[i] = x;
+            break;
+        }
+    }
+}
+
+int main() {
+    // Deciding the number of frames in memeory    
+    const int nFrames = 4;
+    vector<int> frames;
+    
+    vector<int> pgHistory;  // Page history stack to store the recntly opened pages
+    int nHits = 0;  // to Calculate hit ratio
+    
+    // reference string tells the page id requested by the processor
+    vector<int> refStr = {1,3,6,4,7,9,2,3,1,6,4};
+    
+    // Putting Pages in Frames
+    for (int i = 0;i<refStr.size();i++) {
+        bool hit = false;
+        pgHistory.push_back(refStr[i]); // Adding latest page in History Stack
+        
+        // Priniting page id called for
+        cout<<"\n Pg"<< refStr[i] ;
+        
+        // Checking if Hit or Miss
+        if ( added(frames,refStr[i]) ) {
+            hit = true;
+            nHits++;
+            
+            // Removing previous instance of the Page from history
+            for (int j = 0;j<pgHistory.size();j++) {
+                if (pgHistory[j] == refStr[i]) {
+                    pgHistory.erase(pgHistory.begin()+j);
+                    break;
+                }
+            }
+        }
+        
+        // If not found
+        else {
+            // If frames full then replace the page pointed by the pointer
+            if (frames.size() >= nFrames) {
+                // The page which was least recently used will be at the bottom of the History Stack
+                replacePage(frames,pgHistory[0],refStr[i]);
+                
+                // Remove the replaced frame from the Stack
+                pgHistory.erase(pgHistory.begin() );
+            }
+            // if space in frames add at end
+            else frames.push_back(refStr[i]);
+        }
+        
+        // printing hit/miss
+        if (hit) cout<<"\t|\tHIT\t|\t";
+        else cout<<"\t|\tMISS\t|\t";
+        
+        // Printing the Pages in frames
+        for (int x : frames) {
+            cout<< x <<" ";
+        }
+    }
+    
+    // printing Hit Ratio
+    cout<<"\n\n Hit ratio : "<< (float)nHits/refStr.size();
+    
+    return 0;
+}

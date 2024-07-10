@@ -1,0 +1,82 @@
+// Shortest Job First
+#include <iostream>
+#include <vector>
+
+using namespace std;
+
+struct Process {
+    int pNo;
+    int AT;
+    int BT;
+    int CT;
+    int TAT;
+    int WT;
+};
+
+void selection_sort (std::vector<Process> &p) {
+    for (int i = 0;i<p.size()-1;i++) {
+        int small = i;
+        for (int j = i+1;j<p.size();j++) {
+            if (p[j].BT < p[small].BT) small = j;
+        }
+        
+        // Swapping the Process of the smallest burst Value with P[i]
+        Process temp = p[i] ;
+        p[i] = p[small];
+        p[small] = temp;
+    }
+}
+
+int main() {
+    int n;
+    std::vector<Process> p;
+    cout<<"\n Enter number of Processes : ";
+    cin>> n;
+    
+    // Taking Inputs 
+    for (int i = 0;i<n;i++) {
+        Process pro;
+        
+        cout<<"\n\n Process "<< i+1;
+        pro.pNo = i+1;
+        cout<<"\n Enter Burst Time : ";
+        cin>> pro.BT;
+        
+        // cout<<"\n Enter Arrival Time : ";
+        // cin>> pro.AT;
+        cout<<"\n-----------------------";
+        
+        p.push_back(pro);
+    }
+    
+    // Sorting the Processes Based on Burst Time
+    selection_sort(p);
+    
+    // Calculating other values for all the process
+    int tStamp = 0;
+    int t_WT = 0;
+    int t_TAT = 0;
+    for (int i = 0;i<n;i++) {
+        p[i].CT = p[i].BT + tStamp;
+        p[i].TAT = p[i].CT;
+        p[i].WT = tStamp;
+        
+        t_WT += p[i].WT;
+        t_TAT += p[i].TAT;
+        
+        tStamp += p[i].BT;
+    }
+    
+    // Display Results
+    cout<<"\n\n Process \t BT \t\t TAT \t\t WT";
+    for (int i = 0;i<n;i++) {
+        cout<<"\n"<< p[i].pNo <<"\t\t\t"<< p[i].BT <<"\t\t\t"<< p[i].TAT <<"\t\t\t"<< p[i].WT;
+    }
+    
+    // Displaying Average TAT and Average WT
+    cout<<"\n\n AVerage Turn Around Time : "<< (float)t_TAT/n;
+    cout<<"\nAverage Waiting Time : "<< (float)t_WT/n;
+    
+    
+    return 0;
+}

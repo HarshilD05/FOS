@@ -1,0 +1,104 @@
+// Solving the Producer Consumer Problem
+#include <iostream>
+using namespace std;
+
+struct MemBuffer {
+    int size;
+    int counter;
+    int sem;
+    
+    MemBuffer (int s) : size(s), counter(0) {}
+};
+
+void WAIT (int &s) {
+      // If Memory unoccupied change semaphore to 0 to indicate that Buffer is now Occupied
+    if (s != 0) s = 0;
+    // else while(!s);    // Otherwise Wait
+}
+
+void SIGNAL (int &s) {
+    // When exiting change semaphore to 1 to indicate Buffer is Free
+    s = 1;
+}
+
+void producer (MemBuffer &b) {
+    WAIT(b.sem);
+    
+    // Checking if Buffer is FULL
+    if (b.counter < b.size) {
+        // Producing Data
+        b.counter ++;   // Updating Counter
+        cout<<"\nData Produced...";
+        cout<<"\n Counter : "<< b.counter;
+    }
+    // Wait till BUffer has space
+    else cout<<"\nMemory Is FULL! Cannot Produce more data...";
+    
+    
+    SIGNAL(b.sem);
+}
+
+void consumer (MemBuffer &b) {
+    WAIT(b.sem);
+    
+    // Checking if data in Buffer
+    if (b.counter > 0) {
+        // Consuming data
+        b.counter --;   // updating counter
+        cout<<"\nData Consumed...";
+        cout<<"\nCounter : "<< b.counter;
+    }
+    else cout<<"\nBuffer is EMPTY! NO data to Consume....";
+    
+    SIGNAL(b.sem);
+}
+
+int main() {
+    /* Since Semaphor requires concurrent use of 
+    Producer and Consumer Functions 
+    It is not possible to Simulate it in CPP
+    without adding extra code for timestamps
+    So only limitation according to Counter of the Buffer
+    is Simulated here
+    */
+    
+    // Defining the Memory Buffer
+    int n;
+    cout<<"Enter the Max Size of the BUFFER : ";
+    cin>> n;
+    MemBuffer b(n);
+    
+    // Begin series of Producer and consumer processes
+    int choice;
+    while (1) {
+        start : 
+        cout<<"\n\n Press... \n 1 - Producer() \t 2 - Consumer() ";
+        cout<<"\t 0 - Exit";
+        cout<<"\nYour Choice : ";
+        cin>> choice;
+        
+        switch (choice) {
+            case 0 : 
+            cout<<"\n\n End of Program...";
+            return 0;
+            
+            case 1 : 
+            cout<<"\n\n Producer Process";
+            producer(b);
+            break;
+            
+            case 2 : 
+            cout<<"\n\n Consumer Process";
+            consumer(b);
+            break;
+            
+            default : 
+            cout<<"\n\n Invalid Input... ";
+            goto start;
+        }
+    }
+    
+    
+    
+    return 0;
+}

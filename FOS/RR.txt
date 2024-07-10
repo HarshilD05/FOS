@@ -1,0 +1,110 @@
+// 
+#include <iostream>
+using namespace std;
+
+struct Process {
+    int id;
+    int BT;
+    int remT;
+    int AT;
+    int CT;
+    int TAT;
+    int WT;
+    
+    Process () {}
+    
+    Process (int i) : id(i), CT(0), TAT(0), WT(0) {
+        cout<<"\n\nEnter Details for Prcoess "<< id ;
+        cout<<"\nEnter Burst Time : ";
+        cin>> BT;
+        remT = BT;  // remaining time same as Burst Time
+        cout<<"\n Enter Arrival Time (0 if not specified) : ";
+        cin>> AT;
+    }
+};
+
+void print_details (Process p[], int n) {
+    int total_tat = 0;
+    int total_wt = 0;
+    
+    cout<<"\n\n Printing Process Details....";
+    cout<<"\nP\tBT\tAT\tCT\tTAT\tWT";
+    for (int i = 0;i<n;i++) {
+        cout<<"\n"<<p[i].id<<"\t"<<p[i].BT<<"\t"<<p[i].AT<<"\t"<<p[i].CT<<"\t"<<p[i].TAT<<"\t"<<p[i].WT;
+        
+        // total waiting and TAT
+        total_tat += p[i].TAT;
+        total_wt += p[i].WT;
+    }
+    
+    cout<<"\n\n Average Waiting Time : "<< (float)total_wt/n;
+    cout<<"\n Average TAT : "<< (float)total_tat/n;
+    
+}
+
+// function to check if all processes have finished executing
+bool over (Process p[], int n) {
+    for (int i = 0;i<n;i++) {
+        if (p[i].remT) return false;
+    }
+    return true;
+}
+
+int main() {
+    cout<<"RR Simulation";
+    Process p[20];  // List of Processes
+    
+    // Initialising Quantum time
+    int qt;
+    cout<<"\n\nEnter Quantum Time : ";
+    cin>> qt;
+    
+    // taking input of Processes
+    int n;
+    cout<<"\n\nEnter Number of Processes : ";
+    cin>> n;
+    
+    for (int i = 0;i<n;i++) {
+        Process x(i);   // New Process
+        p[i] = x;   // Adding the Process to List
+    }
+    
+    // Executing the Processes
+    int tStamp = 0;
+    int i = 0;  // pointer for Processes
+    while ( !over(p,n) ) {
+        // Checking if the next Process Has arrived or not
+        if (p[i].AT > tStamp) tStamp = p[i].AT;
+        
+        cout<<"\n\ntStamp : "<< tStamp;
+        cout<<"\n Executing Process "<<p[i].id<<"\t RemT : "<<p[i].remT;
+        
+        // If remaining time > quantum time
+        if (p[i].remT>qt) {
+            p[i].remT -= qt;
+            tStamp += qt;
+        }
+        // If remaining time <= Quantum Time
+        else if (p[i].remT) {
+            tStamp += p[i].remT;
+            p[i].remT = 0;
+            p[i].CT = tStamp;   // Completion Time recorded
+            
+            // Calculating the TAT and WT
+            p[i].TAT = p[i].CT - p[i].AT;
+            p[i].WT = p[i].TAT - p[i].BT;
+            
+            cout<<"\n\nProcess Completed....";
+        }
+        
+        i++;
+        i%=n;
+        
+    }
+    
+    // Printing Final Details
+    print_details(p,n);
+    
+
+    return 0;
+}

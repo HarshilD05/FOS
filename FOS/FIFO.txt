@@ -1,0 +1,62 @@
+// Implementing FIFO Page Replacement Algorithm
+#include <iostream>
+#include<vector>
+using namespace std;
+
+bool added (vector<int> f, int page) {
+    for (int x : f) {
+        if (x == page) return true;
+    }
+    return false;
+}
+
+int main() {
+    // Deciding the number of frames in memeory    
+    const int nFrames = 4;
+    vector<int> frames;
+    int ptr = -1;   // Pointer pointing to the Page to be replaced
+    int nHits = 0;  // to Calculate hit ratio
+    
+    // reference string tells the oage id requested by the processor
+    vector<int> refStr = {1,3,6,4,7,9,2,3,1,6,4};
+    
+    // Putting Pages in Frames
+    for (int i = 0;i<refStr.size();i++) {
+        bool hit = false;
+        
+        // Priniting page id called for
+        cout<<"\n Pg"<< refStr[i] ;
+        
+        // Checking if Hit or Miss
+        if ( added(frames,refStr[i]) ) {
+            hit = true;
+            nHits++;
+        }
+        // If not found
+        else {
+            // If frames full then replace the page pointed by the pointer
+            if (frames.size() >= nFrames) {
+                frames[ptr] = refStr[i];
+            }
+            // if space in frames add at end
+            else frames.push_back(refStr[i]);
+            
+            ptr++;
+            ptr %= (nFrames);
+        }
+        
+        // printing hit/miss
+        if (hit) cout<<"\t|\tHIT\t|\t";
+        else cout<<"\t|\tMISS\t|\t";
+        
+        // Printing the Pages in frames
+        for (int x : frames) {
+            cout<< x <<" ";
+        }
+    }
+    
+    // printing Hit Ratio
+    cout<<"\n\n Hit ratio : "<< (float)nHits/refStr.size();
+    
+    return 0;
+}
