@@ -6,12 +6,12 @@
 using namespace std;
 
 struct Process {
-    int no;
-    int AT;
-    int BT;
-    int CT;
-    int TAT;
-    int WT;
+    int no;    // Id
+    int AT;    // Arrival time
+    int BT;    // Burst Time
+    int CT;    // Completion time
+    int TAT;   // Turn Around Time
+    int WT;    // Wait Time
     
     Process (int n) : no(n) {
         cout<<"\n\n Please Enter Details for Process "<< n <<" ......";
