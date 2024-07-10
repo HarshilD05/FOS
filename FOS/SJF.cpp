@@ -7,13 +7,13 @@
 using namespace std;
 
 struct Process {
-    int no;
-    int AT;
-    int BT;
-    int remT;
-    int CT;
-    int TAT;
-    int WT;
+    int no;    // Id
+    int AT;    // Arrival Time
+    int BT;    // Burst Time
+    int remT;  // Remaining Time
+    int CT;    // Completion Time
+    int TAT;   // Turn Around Time
+    int WT;    // Wait Time
     
     Process (int n, int a, int b) : no(n), AT(a), BT(b), remT(b), CT(0), TAT(0), WT(0) {}
     
