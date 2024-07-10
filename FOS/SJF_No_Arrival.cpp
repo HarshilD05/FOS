@@ -5,12 +5,12 @@
 using namespace std;
 
 struct Process {
-    int pNo;
-    int AT;
-    int BT;
-    int CT;
-    int TAT;
-    int WT;
+    int pNo;    // Id
+    int AT;    // Arrival Time
+    int BT;    // Burst Time
+    int CT;    // Completion Time
+    int TAT;   // Turn Around Time
+    int WT;    // Wait Time
 };
 
 void selection_sort (std::vector<Process> &p) {
