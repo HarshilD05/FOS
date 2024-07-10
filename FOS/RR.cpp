@@ -3,13 +3,13 @@
 using namespace std;
 
 struct Process {
-    int id;
-    int BT;
-    int remT;
-    int AT;
-    int CT;
-    int TAT;
-    int WT;
+    int id;    // Id
+    int BT;    // Burst Time
+    int remT;  // Remaining Time
+    int AT;    // Arrival Time
+    int CT;    // Completion Time
+    int TAT;   // Turn Around Time
+    int WT;    // Wait Time
     
     Process () {}
     
